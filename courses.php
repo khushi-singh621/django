@@ -1,147 +1,81 @@
-<!--start including header-->
 <?php
-include('./mainInclude/header.php');
+if(!isset($_SESSION)){
+    session_start();
+}
+
+include('./admininclude/header.php'); 
+include('../dbConnection.php');
+if(isset($_SESSION['is_admin_login'])){
+    $adminEmail = $_SESSION['adminLogEmail'];
+
+} else{
+    echo "<script> location.href='../index.php';</script>";
+}
 ?>
-<!--end including header-->
-<!--start course page banner-->
-<div class="container-fluid bg-dark">
-	<div class="row">
-		<img src="./images/lib2.webp" alt="courses" style="height:465px; width: 100%; object-fit: cover; box-shadow: 10px;">
-	</div>
+
+<div class="col-sm-9 mt-5">
+    <p class="bg-dark text-white p-2">List of Courses</p>
+    <?php
+    $stmt = "SELECT * FROM course";
+    $result = $conn->query($stmt);
+    if ($result->num_rows > 0) {
+    ?>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Courses ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+               <?php while ($row = $result->fetch_assoc()) { ?>
+    <tr>
+        <th scope="row"><?php echo $row['course_id']; ?></th>
+        <td><?php echo $row['course_name']; ?></td>
+        <td><?php echo $row['course_author']; ?></td>
+        <td>
+            <!-- Edit Form -->
+            <form action="editcourse.php" method="POST" class="d-inline">
+                <input type="hidden" name="id" value="<?php echo $row['course_id']; ?>">
+                <button type="submit" class="btn btn-info mr-3" name="view" value="View">
+                    <i class="fas fa-pen"></i>
+                </button>
+            </form>
+
+            <!-- Delete Form -->
+            <form action="" method="POST" class="d-inline">
+                <input type="hidden" name="id" value="<?php echo $row['course_id']; ?>">
+                <button type="submit" class="btn btn-secondary" name="delete" value="Delete">
+                    <i class="far fa-trash-alt"></i>
+                </button>
+            </form>
+        </td>
+    </tr>
+<?php } ?>
+
+            </tbody>
+        </table>
+    <?php } else {
+        echo "0 Results";
+    } 
+
+    if (isset($_POST['delete']) && isset($_POST['id'])) {
+        $course_id = intval($_POST['id']);
+        $stmt = "DELETE FROM course WHERE course_id = $course_id";
+        if ($conn->query($stmt) === TRUE) {
+            echo '<meta http-equiv="refresh" content="0;URL=?deleted"/>';
+        } else {
+            echo "Unable to Delete Data";
+        }
+    }
+    ?>
 </div>
-<!--end course page banner-->
-<!--start all popular courses-->
-<div class="container mt-5">
-    <h1 class="text-center">All Courses</h1>
-    <div class="card-deck mt-4">
-        <a href="#" class="btn" style="text-align-left; padding: 0px; margin: 0px;">
-  <div class="card">
-    <img src="images/se.jpeg" class="card-img-top" alt="Guitar" height="250px">
-    <div class="card-body">
-      <h5 class="card-title">Learn Guitar Easy Way</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-     </div>
-  <div class="card-footer">
-    <p class ="card-text d-inline">Price: <small><del>& #8377 2000 </del></small><span class="font-weight-bolder">& #8377 2000</span></p>
-    <a class="btn btn-primary text-white font-weight-bolder float-right" href="coursedetails.php">Enroll</a>
+<div>
+    <a class="btn btn-danger box" href="./addCourse.php"><i class="fas fa-plus fa-2x"></i></a>
 </div>
-</div>
-</a>
-<a href="#" class="btn" style="text-align-left; padding: 0px; margin: 0px;">
-  <div class="card">
-    <img src="images/python.webp" class="card-img-top" alt="Guitar" height="250px">
-    <div class="card-body">
-      <h5 class="card-title">Learn Guitar Easy Way</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-     </div>
-  <div class="card-footer">
-    <p class ="card-text d-inline">Price: <small><del>& #8377 2000 </del></small><span class="font-weight-bolder">& #8377 2000</span></p>
-    <a class="btn btn-primary text-white font-weight-bolder float-right" href="#">Enroll</a>
-</div>
-</div>
-</a>
-<a href="#" class="btn" style="text-align-left; padding: 0px; margin: 0px;">
-  <div class="card">
-    <img src="images/php.png" class="card-img-top" alt="Guitar" height="250px">
-    <div class="card-body">
-      <h5 class="card-title">Learn Guitar Easy Way</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-     </div>
-  <div class="card-footer">
-    <p class ="card-text d-inline">Price: <small><del>& #8377 2000 </del></small><span class="font-weight-bolder">& #8377 2000</span></p>
-    <a class="btn btn-primary text-white font-weight-bolder float-right" href="#">Enroll</a>
-</div>
-</div>
-</a>
-</div>
-<!--end most popular courses-->
-<!--start most popular courses2-->
- <div class="card-deck mt-4">
-        <a href="#" class="btn" style="text-align-left; padding: 0px; margin: 0px;">
-  <div class="card">
-    <img src="images/ml.jpg" class="card-img-top" alt="Guitar" height="250px">
-    <div class="card-body">
-      <h5 class="card-title">Learn Pytthon</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-     </div>
-  <div class="card-footer">
-    <p class ="card-text d-inline">Price: <small><del>& #8377 2000 </del></small><span class="font-weight-bolder">& #8377 2000</span></p>
-    <a class="btn btn-primary text-white font-weight-bolder float-right" href="#">Enroll</a>
-</div>
-</div>
-</a>
-<a href="#" class="btn" style="text-align-left; padding: 0px; margin: 0px;">
-  <div class="card">
-    <img src="images/ai.jpg" class="card-img-top" alt="Guitar" height="250px">
-    <div class="card-body">
-      <h5 class="card-title">Learn Pytthon</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-     </div>
-  <div class="card-footer">
-    <p class ="card-text d-inline">Price: <small><del>& #8377 2000 </del></small><span class="font-weight-bolder">& #8377 2000</span></p>
-    <a class="btn btn-primary text-white font-weight-bolder float-right" href="#">Enroll</a>
-</div>
-</div>
-</a>
-<a href="#" class="btn" style="text-align-left; padding: 0px; margin: 0px;">
-  <div class="card">
-    <img src="images/java.webp" class="card-img-top" alt="Guitar" height="250px">
-    <div class="card-body">
-      <h5 class="card-title">Learn Python</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-     </div>
-  <div class="card-footer">
-    <p class ="card-text d-inline">Price: <small><del>& #8377 2000 </del></small><span class="font-weight-bolder">& #8377 2000</span></p>
-    <a class="btn btn-primary text-white font-weight-bolder float-right" href="#">Enroll</a>
-</div>
-</div>
-</a>
-</div>
-<!--end the deck2-->
-<div class="card-deck mt-4">
-        <a href="#" class="btn" style="text-align-left; padding: 0px; margin: 0px;">
-  <div class="card">
-    <img src="images/iot.webp" class="card-img-top" alt="Guitar" height="250px">
-    <div class="card-body">
-      <h5 class="card-title">Learn Pytthon</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-     </div>
-  <div class="card-footer">
-    <p class ="card-text d-inline">Price: <small><del>& #8377 2000 </del></small><span class="font-weight-bolder">& #8377 2000</span></p>
-    <a class="btn btn-primary text-white font-weight-bolder float-right" href="#">Enroll</a>
-</div>
-</div>
-</a>
-<a href="#" class="btn" style="text-align-left; padding: 0px; margin: 0px;">
-  <div class="card">
-    <img src="images/de.jpeg" class="card-img-top" alt="Guitar" height="250px">
-    <div class="card-body">
-      <h5 class="card-title">Learn Pytthon</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-     </div>
-  <div class="card-footer">
-    <p class ="card-text d-inline">Price: <small><del>& #8377 2000 </del></small><span class="font-weight-bolder">& #8377 2000</span></p>
-    <a class="btn btn-primary text-white font-weight-bolder float-right" href="#">Enroll</a>
-</div>
-</div>
-</a>
-<a href="#" class="btn" style="text-align-left; padding: 0px; margin: 0px;">
-  <div class="card">
-    <img src="images/Csharp.png" class="card-img-top" alt="Guitar" height="250px">
-    <div class="card-body">
-      <h5 class="card-title">Learn Python</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-     </div>
-  <div class="card-footer">
-    <p class ="card-text d-inline">Price: <small><del>& #8377 2000 </del></small><span class="font-weight-bolder">& #8377 2000</span></p>
-    <a class="btn btn-primary text-white font-weight-bolder float-right" href="#">Enroll</a>
-</div>
-</div>
-</a>
-</div>
-</div>
-<!-- start including footer-->
+
 <?php
-include('./mainInclude/footer.php');
+include('./admininclude/footer.php');
 ?>
-<!-- end including footer-->
